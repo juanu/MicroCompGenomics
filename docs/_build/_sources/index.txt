@@ -11,6 +11,10 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
+   Tutorial
+   Scripts
+   Modules
+
 Here is a collection of scripts to perform comparative genomic analysis on microbial genomes.
 
 Support
