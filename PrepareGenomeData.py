@@ -6,7 +6,6 @@ __author__ = 'Juan A. Ugalde'
 
 import os
 import argparse
-from collections import defaultdict
 
 from tools.data_input import GenomeData
 
@@ -37,3 +36,29 @@ parser.add_argument("-o", "--output_directory", type=str, help="Output folder", 
 args = parser.parse_args()
 
 #Create output directory
+
+if not os.path.exists(args.output_directory):
+    os.makedirs(args.output_directory)
+    os.makedirs(args.output_directory + "/nucleotide")
+    os.makedirs(args.output_directory + "/protein")
+    os.makedirs(args.output_directory + "/genome")
+    os.makedirs(args.output_directory + "/annotation")
+    os.makedirs(args.output_directory + "/coords")
+
+#Read the genome list and create a dictionary with the information, and the total genome count
+genome_dictionary, total_genome_count = GenomeData.read_genome_list(args.genome_list)
+
+
+#Read the source option, and process the genome data
+
+processed_genomes = 0
+
+if args.genome_source == "jgi":
+    processed_genomes = GenomeData.parse_jgi_dump(genome_dictionary, args.input_folder, args.output_directory)
+
+if args.genome_source == "img_single":
+    processed_genomes = GenomeData.parse_single_img(genome_dictionary, args.input_folder, args.output_directory)
+
+print "Done processing %d genomes" % total_genome_count
+print "A total of %d genomes were found in the input folder" % processed_genomes
+
