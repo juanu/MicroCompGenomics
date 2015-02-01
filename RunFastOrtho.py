@@ -70,15 +70,20 @@ os.chdir(args.output_directory)
 
 #Create an option file. If the iteration flag is not set, we will use the default value of 1.5
 #After creation, run FastOrtho
-path_option_file = create_option_file(args.mcl, args.output_directory, 1.5, args.input_blast, args.protein_directory)
 
-#Run FastOrtho
-run_fast_ortho = args.fastortho + " --option_file " + path_option_file
-subprocess.call(run_fast_ortho)
-#Create an option file with iteration. The range will go from 1 to 10, in 0.5 intervals. This could
-#change, depending on some results.
+if not args.iteration:
 
-if args.iteration:
+    path_option_file = create_option_file(args.mcl, args.output_directory, 1.5, args.input_blast, args.protein_directory)
+
+    #Run FastOrtho
+    run_fast_ortho = args.fastortho + " --option_file " + path_option_file
+    print run_fast_ortho
+
+    subprocess.call(run_fast_ortho)
+    #Create an option file with iteration. The range will go from 1 to 10, in 0.5 intervals. This could
+    #change, depending on some results.
+
+else:
     i = 1.0
     cluster_inflation = [[], []]
 
