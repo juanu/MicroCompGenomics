@@ -35,7 +35,7 @@ def create_option_file(mcl, od, inflation, blast, pd):
     #Add the protein info to the parameter file
     for root, dirs, files in os.walk(pd):
         for name in files:
-            parameter_file.write("--single_genome_fasta %s\n" % os.path.abspath(name))
+            parameter_file.write("--single_genome_fasta %s\n" % os.path.abspath(os.path.dirname(name)) + "/" + root + name)
 
     parameter_file.close()
 
@@ -72,8 +72,11 @@ path_option_file = create_option_file(args.mcl, args.output_directory, 1.5, args
 #Run FastOrtho
 run_fast_ortho = args.fastortho + " --option_file " + path_option_file
 subprocess.call(run_fast_ortho)
-
+cd
 #Create an option file with iteration. The range will go from 1 to 10, in 0.5 intervals. This could
 #change, depending on some results.
+
+if args.interation:
+    pass
 
 
