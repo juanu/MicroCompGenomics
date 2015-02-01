@@ -27,6 +27,7 @@ def create_option_file(mcl, od, inflation, blast, pd):
     parameter_file.write("--working_directory %s\n" % working_directory)
     parameter_file.write("--project_name %s\n" % ("fastortho_I" + str(inflation)))
     parameter_file.write("--blast_file %s\n" % blast)
+    parameter_file.write("--inflation numeric_value %s\n" % inflation)
 
     #Create the working directory
     if not os.path.exists(working_directory):
@@ -64,9 +65,11 @@ args = parser.parse_args()
 if not os.path.exists(args.output_directory):
     os.makedirs(args.output_directory)
 
+#Move to the output directory
+os.chdir(args.output_directory)
+
 #Create an option file. If the iteration flag is not set, we will use the default value of 1.5
 #After creation, run FastOrtho
-
 path_option_file = create_option_file(args.mcl, args.output_directory, 1.5, args.input_blast, args.protein_directory)
 
 #Run FastOrtho
@@ -75,7 +78,25 @@ subprocess.call(run_fast_ortho)
 #Create an option file with iteration. The range will go from 1 to 10, in 0.5 intervals. This could
 #change, depending on some results.
 
-if args.interation:
-    pass
+if args.iteration:
+    i = 1.0
+    cluster_inflation = [[], []]
 
+    while i < 5.1:
+        path_option_file = create_option_file(args.mcl, args.output_directory, i, args.input_blast, args.protein_directory)
+        run_fast_ortho = args.fastortho + " --option_file " + path_option_file
+        subprocess.call(run_fast_ortho)
+
+        #Count number of clusters
+        filename = args.output_directory + "/options_I" + str(i) + ".txt"
+        number_cluster = 0
+        with open(filename) as f:
+            number_cluster = sum(1 for _ in f)
+
+        cluster_inflation[0].append(i)
+        cluster_inflation[1].append(number_cluster)
+
+        i += 0.5
+
+    print cluster_inflation
 
