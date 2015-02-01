@@ -106,6 +106,6 @@ else:
 
     cluster_data = open(args.output_directory + "/Inflation_ClusterSize.txt", 'w')
     for value in cluster_inflation:
-        cluster_data.write(value[0] + "\t" + value[1] + "\n")
+        cluster_data.write(str(value[0]) + "\t" + str(value[1]) + "\n")
 
     cluster_data.close()
