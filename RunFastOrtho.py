@@ -78,8 +78,8 @@ if not args.iteration:
     #Run FastOrtho
     run_fast_ortho = args.fastortho + " --option_file " + path_option_file
     print run_fast_ortho
+    os.system(run_fast_ortho)
 
-    subprocess.call(run_fast_ortho)
     #Create an option file with iteration. The range will go from 1 to 10, in 0.5 intervals. This could
     #change, depending on some results.
 
