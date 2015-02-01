@@ -27,7 +27,7 @@ def create_option_file(mcl, od, inflation, blast, pd):
     parameter_file.write("--working_directory %s\n" % working_directory)
     parameter_file.write("--project_name %s\n" % ("fastortho_I" + str(inflation)))
     parameter_file.write("--blast_file %s\n" % blast)
-    parameter_file.write("--inflation numeric_value %s\n" % inflation)
+    parameter_file.write("--inflation %s\n" % inflation)
 
     #Create the working directory
     if not os.path.exists(working_directory):
@@ -90,7 +90,7 @@ else:
     while i < 5.1:
         path_option_file = create_option_file(args.mcl, args.output_directory, i, args.input_blast, args.protein_directory)
         run_fast_ortho = args.fastortho + " --option_file " + path_option_file
-        subprocess.call(run_fast_ortho)
+        os.system(run_fast_ortho)
 
         #Count number of clusters
         filename = args.output_directory + "/options_I" + str(i) + ".txt"
