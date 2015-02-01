@@ -35,7 +35,7 @@ def create_option_file(mcl, od, inflation, blast, pd):
     #Add the protein info to the parameter file
     for root, dirs, files in os.walk(pd):
         for name in files:
-            parameter_file.write("--single_genome_fasta %s\n" % (os.path.abspath(os.path.dirname(name)) + "/" + root + "/" + name))
+            parameter_file.write("--single_genome_fasta %s\n" % (pd + "/" + name))
 
     parameter_file.close()
 
