@@ -3,9 +3,9 @@ __author__ = 'Juan A. Ugalde'
 
 #TODO Do iteration over several inflation values
 
-import subprocess
 import os
 import argparse
+
 
 def create_option_file(mcl, od, inflation, blast, pd):
     """
@@ -75,7 +75,7 @@ if not os.path.exists(args.output_directory):
 
 if not args.iteration:
 
-    path_option_file = create_option_file(args.mcl, args.output_directory, 1.5, args.input_blast, args.protein_directory)
+    path_option_file = create_option_file(args.mcl, args.output_directory, 1.1, args.input_blast, args.protein_directory)
 
     #Run FastOrtho
     run_fast_ortho = args.fastortho + " --option_file " + path_option_file
@@ -86,8 +86,8 @@ if not args.iteration:
     #change, depending on some results.
 
 else:
-    i = 1.0
-    cluster_inflation = [[], []]
+    i = 1.1
+    cluster_inflation = []
 
     while i < 5.1:
         path_option_file = create_option_file(args.mcl, args.output_directory, i, args.input_blast, args.protein_directory)
@@ -95,15 +95,17 @@ else:
         os.system(run_fast_ortho)
 
         #Count number of clusters
-        filename = args.output_directory + "/options_I" + str(i) + ".txt"
+        cluster_file = args.output_directory + "/options_I" + str(i) + ".txt"
         number_cluster = 0
-        with open(filename) as f:
+        with open(cluster_file) as f:
             number_cluster = sum(1 for _ in f)
 
-        cluster_inflation[0].append(i)
-        cluster_inflation[1].append(number_cluster)
+        cluster_inflation.append([i, number_cluster])
 
-        i += 0.5
+        i += 0.2
 
-    print cluster_inflation
+    cluster_data = open(args.output_directory + "/Inflation_ClusterSize.txt", 'w')
+    for value in cluster_inflation:
+        cluster_data.write(value[0] + "\t" + value[1] + "\n")
 
+    cluster_data.close()
