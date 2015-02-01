@@ -65,11 +65,13 @@ args = parser.parse_args()
 if not os.path.exists(args.output_directory):
     os.makedirs(args.output_directory)
 
-#Move to the output directory
-os.chdir(args.output_directory)
 
 #Create an option file. If the iteration flag is not set, we will use the default value of 1.5
 #After creation, run FastOrtho
+
+#Move to the output directory
+#os.chdir(args.output_directory)
+
 
 if not args.iteration:
 
