@@ -95,7 +95,7 @@ else:
         os.system(run_fast_ortho)
 
         #Count number of clusters
-        cluster_file = args.output_directory + "/options_I" + str(i) + ".txt"
+        cluster_file = args.output_directory + "/fastortho_I" + str(i) + "/fastortho_I" + str(i) + ".end"
         number_cluster = 0
         with open(cluster_file) as f:
             number_cluster = sum(1 for _ in f)
