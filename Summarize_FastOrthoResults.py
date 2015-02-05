@@ -150,7 +150,7 @@ def seqs_shared_clusters(cd, gd):
 
     for single_cluster in cd:
 
-        genome_list = [protein.split("|")[0] for protein in cd[single_cluster]]  # Create a list with the genomes
+        genome_list = [prot.split("|")[0] for prot in cd[single_cluster]]  # Create a list with the genomes
 
         occurence_count = {x: genome_list.count(x) for x in genome_list}  # Count the occurences
 
@@ -159,7 +159,7 @@ def seqs_shared_clusters(cd, gd):
 
         for genome_entry in genomes_in_matrix:
 
-            if genome in genome_list:
+            if genome_entry in genome_list:
                 cluster_matrix.append(occurence_count[genome_entry])
             else:
                 cluster_matrix.append(0)
