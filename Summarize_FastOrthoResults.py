@@ -60,6 +60,8 @@ def parse_fastortho(cf, gl):
 
         clean_protein_list = []  # This is used to remove proteins from genomes not in the list
 
+        print prot
+
         for genome_entry in gl:  # Adding the proteins that we need
             [clean_protein_list.append(prot) for prot in [x for x in prot if x.startswith(genome_entry)]]
 
