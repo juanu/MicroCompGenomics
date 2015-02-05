@@ -1,10 +1,6 @@
 #Created on 1/2/2015
 __author__ = 'Juan A. Ugalde'
 
-import os
-import sys
-import argparse
-from tools.data_input import GenomeData
 from collections import defaultdict
 import re
 
@@ -58,12 +54,12 @@ def parse_fastortho(cf, gl):
         total_cluster_count += 1
         line = line.strip('\n')
         ids_proteins = re.split(":\s+", line)
-        proteins = ids_proteins[1].split(" ")
+        prot = ids_proteins[1].split(" ")
 
         clean_protein_list = []  # This is used to remove proteins from genomes not in the list
 
-        for genome in gl:  # Adding the proteins that we need
-            [clean_protein_list.append(protein) for protein in [x for x in proteins if x.startswith(genome)]]
+        for genome_entry in gl:  # Adding the proteins that we need
+            [clean_protein_list.append(prot) for prot in [x for x in prot if x.startswith(genome_entry)]]
 
         #Now I need to evaluate those clusters that now are unique and zero
         if len(clean_protein_list) == 0:
@@ -75,11 +71,11 @@ def parse_fastortho(cf, gl):
             clusters_removed += 1
             continue
 
-        for protein in clean_protein_list:
+        for prot in clean_protein_list:
             cluster_id = ids_proteins[0].split(" (")[0]
 
-            cluster_dictionary[cluster_id].append(protein)
-            proteins_in_cluster.add(protein)
+            cluster_dictionary[cluster_id].append(prot)
+            proteins_in_cluster.add(prot)
 
     return cluster_dictionary, proteins_in_cluster, unique_proteins_genome_count, total_cluster_count, clusters_removed
 
@@ -96,15 +92,15 @@ def read_group_files(gf):
 
     from collections import defaultdict
 
-    genome_groups = defaultdict(list)
+    gg = defaultdict(list)
 
     for line in open(gf, 'r'):
         line = line.rstrip()
         element = line.split("\t")
 
-        genome_groups[element[0]].append(element[1])
+        gg[element[0]].append(element[1])
 
-    return genome_groups
+    return gg
 
 
 def get_unique_seqs_genome(protein_genomes, protein_clusters, protein_length, min_length):
@@ -119,17 +115,17 @@ def get_unique_seqs_genome(protein_genomes, protein_clusters, protein_length, mi
     short_unique_sequences = defaultdict(list)
     processed_sequences = 0
 
-    for genome in protein_genomes:
-        for seq_name in protein_genomes[genome]:
+    for genome_entry in protein_genomes:
+        for seq_name in protein_genomes[genome_entry]:
             processed_sequences += 1
 
             if seq_name in protein_clusters:
                 continue
             else:
                 if protein_length[seq_name] > min_length:
-                    large_unique_sequences[genome].append(seq_name)
+                    large_unique_sequences[genome_entry].append(seq_name)
                 else:
-                    short_unique_sequences[genome].append(seq_name)
+                    short_unique_sequences[genome_entry].append(seq_name)
 
     return large_unique_sequences, short_unique_sequences, processed_sequences
 
@@ -141,44 +137,44 @@ def seqs_shared_clusters(cd, gd):
     :return: Genome groups
     """
 
-    unique_clusters = defaultdict(list)  # Dictionary with the unique clusters
-    shared_single_clusters = []  # List with clusters that are shared and single copy
-    shared_multiple_clusters = []  # List with clusters that are shared and in multiple copies
+    u_clusters = defaultdict(list)  # Dictionary with the unique clusters
+    ss_clusters = []  # List with clusters that are shared and single copy
+    sm_clusters = []  # List with clusters that are shared and in multiple copies
 
     genomes_in_matrix = sorted(gd.keys())
     header = ["Cluster_ID"]
     header.extend(sorted(gd.keys()))
-    all_clusters_matrix = [header]
+    total_cluster_matrix = [header]
 
-    for cluster in cd:
+    for single_cluster in cd:
 
-        genome_list = [protein.split("|")[0] for protein in cd[cluster]]  # Create a list with the genomes
+        genome_list = [protein.split("|")[0] for protein in cd[single_cluster]]  # Create a list with the genomes
 
-        count = {x: genome_list.count(x) for x in genome_list}  # Count the occurences
+        occurence_count = {x: genome_list.count(x) for x in genome_list}  # Count the occurences
 
         #Create the matrix
-        cluster_matrix = [cluster]
+        cluster_matrix = [single_cluster]
 
-        for genome in genomes_in_matrix:
+        for genome_entry in genomes_in_matrix:
 
             if genome in genome_list:
-                cluster_matrix.append(count[genome])
+                cluster_matrix.append(occurence_count[genome_entry])
             else:
                 cluster_matrix.append(0)
 
         #print cluster_matrix
-        all_clusters_matrix.append(cluster_matrix)
+        total_cluster_matrix.append(cluster_matrix)
 
-        if len(count) == 1:
-            unique_clusters[genome_list[0]].append(cluster)
+        if len(occurence_count) == 1:
+            u_clusters[genome_list[0]].append(single_cluster)
 
-        elif len(count) == len(gd.keys()):
-            if sum(count.itervalues()) == len(gd.keys()):
-                shared_single_clusters.append(cluster)
+        elif len(occurence_count) == len(gd.keys()):
+            if sum(occurence_count.itervalues()) == len(gd.keys()):
+                ss_clusters.append(single_cluster)
             else:
-                shared_multiple_clusters.append(cluster)
+                sm_clusters.append(single_cluster)
 
-    return unique_clusters, shared_single_clusters, shared_multiple_clusters, all_clusters_matrix
+    return u_clusters, ss_clusters, sm_clusters, total_cluster_matrix
 
 
 def clusters_in_groups(clusters, groups):
@@ -188,23 +184,23 @@ def clusters_in_groups(clusters, groups):
     from collections import defaultdict
 
     import itertools
-    unique_group_clusters = defaultdict(list)  # Count the unique clusters in each group
+    ug_clusters = defaultdict(list)  # Count the unique clusters in each group
 
-    combination_clusters = defaultdict(list)
+    comb_clusters = defaultdict(list)
 
     #Create inverted dictionary
     genome_group_info = defaultdict()
 
-    for group in groups:
-        for genome in groups[group]:
-            genome_group_info[genome] = group
+    for entry in groups:
+        for genome_entry in groups[entry]:
+            genome_group_info[genome_entry] = entry
 
-    for cluster in clusters:
+    for single_cluster in clusters:
 
         group_count = defaultdict(lambda: defaultdict(int))
 
-        for protein in clusters[cluster]:
-            genome_id = protein.split("|")[0]
+        for protein_entry in clusters[single_cluster]:
+            genome_id = protein_entry.split("|")[0]
             group_for_genome = genome_group_info[genome_id]
 
             group_count[group_for_genome][genome_id] += 1
@@ -214,7 +210,7 @@ def clusters_in_groups(clusters, groups):
         if len(group_count) == 1:
             for group in group_count:
                 if len(group_count[group]) == len(groups[group]):
-                    unique_group_clusters[group].append(cluster)
+                    ug_clusters[group].append(single_cluster)
 
                 else:  # I could add something here to count the number of proteins not unique
                     pass
@@ -234,7 +230,218 @@ def clusters_in_groups(clusters, groups):
                             group_check = 1
 
                     if group_check == 0:
-                        combination_clusters[group_combinations].append(cluster)
+                        comb_clusters[group_combinations].append(single_cluster)
 
-    return unique_group_clusters, combination_clusters
+    return ug_clusters, comb_clusters
 
+if __name__ == '__main__':
+    import os
+    import sys
+    import argparse
+    from tools.data_input.GenomeData import read_genome_list
+
+    #Create the options and program description
+    program_description = "This script summarize the results of orthoMCL, and create several summary files." \
+                          " The inputs are:" \
+                          "-List of clusters, generated by orthoMCL" \
+                          "-A genome list" \
+                          "-A folder with fasta files" \
+                          "- An optional group file, to group genomes. For example, all genomes from the same species "
+
+    parser = argparse.ArgumentParser(description=program_description)
+
+    parser.add_argument("-l", "--genome_list_index", type=str,
+                        help="File with the genome list. Format GenomeID, FullName, ShortName", required=True)
+    parser.add_argument("-c", "--cluster_file", type=str, help="Ortholog file, generated by OrthoMCL", required=True)
+    parser.add_argument("-f", "--fasta_aa_directory", type=str, help="Directory with the fasta files", required=True)
+    parser.add_argument("-g", "--group_information", type=str, help="Group file")
+    parser.add_argument("-o", "--output_directory", type=str, help="Output directory", required=True)
+
+    args = parser.parse_args()
+
+    #Create the output directory
+    if not os.path.exists(args.output_directory):
+        os.makedirs(args.output_directory)
+
+    #Create a log file
+    run_summary = open(args.output_directory + "/logfile.txt", 'w')
+
+    #####Read the genome list
+    genome_id_dictionary, genome_count = read_genome_list(args.genome_list_index)
+
+    run_summary.write("Genomes in the genome list: %d" % genome_count + "\n")
+
+    ######Read the cluster information, and check that everything is ok
+    #cluster_information, set_of_proteins_in_clusters, unique_cluster_count, total_clusters, removed_clusters = \
+    #    get_orthomcl_results(args.cluster_file, [i for i in genome_id_dictionary.itervalues()])
+
+    cluster_information, set_of_proteins_in_clusters, unique_cluster_count, total_clusters, removed_clusters = \
+        parse_fastortho(args.cluster_file, genome_id_dictionary.keys())
+
+    run_summary.write("Total number of clusters: %d" % len(cluster_information) + "\n")
+    run_summary.write("Total number of protein in clusters: %d" % len(set_of_proteins_in_clusters) + "\n")
+    run_summary.write("Total number of removed clusters (not present in the genome file): %d" % removed_clusters + "\n")
+
+    #Check the counts, to see if everything is going ok
+    if total_clusters - removed_clusters != len(cluster_information):
+        sys.exit("The number of removed clusters clusters plus the retained clusters, "
+                 "doesn't match the total of original clusters in the file")
+
+    #####Read the fasta file
+    #dic_protein_in_genomes, dic_protein_length, files_read_counter = \
+    #    get_protein_info([i for i in genome_id_dictionary.itervalues()], args.fasta_aa_directory)
+
+    dic_protein_in_genomes, dic_protein_length, files_read_counter = \
+        get_protein_info(genome_id_dictionary.keys(), args.fasta_aa_directory)
+
+    run_summary.write("Total fasta files: %d" % files_read_counter + "\n")
+    run_summary.write("Total number of proteins in the fasta files: %d" % len(dic_protein_length) + "\n")
+
+    #####Read the genome groups (if present)
+    genome_groups = {}
+    if args.group_information:
+        genome_groups = read_group_files(args.group_information)
+        run_summary.write("Total defined groups: %d" % len(genome_groups) + "\n")
+
+    #####################################################
+    #Look for unique protein in each genome
+    selected_unique_proteins, removed_unique_proteins, total_number_proteins = \
+        get_unique_seqs_genome(dic_protein_in_genomes, set_of_proteins_in_clusters, dic_protein_length, 50)
+
+    #Check that everything looks ok
+    check_number = 0
+    for value in selected_unique_proteins.itervalues():
+        check_number += len(value)
+    for value in removed_unique_proteins.itervalues():
+        check_number += len(value)
+
+    if total_number_proteins - len(set_of_proteins_in_clusters) - check_number != 0:
+        print "Total number of proteins:" + str(total_number_proteins)
+        print "Total number of proteins in clusters:" + str(len(set_of_proteins_in_clusters))
+        print "Removed proteins:" + str(check_number)
+        sys.exit("Failed checkpoint. The number of unique proteins and proteins in "
+                 "clusters does not match the total number of proteins")
+
+    #Print the output files
+    count_unique_proteins = open(args.output_directory + "/count_unique_sequences.txt", 'w')
+    list_unique_proteins = open(args.output_directory + "/list_unique_sequences.txt", 'w')
+
+    count_unique_proteins.write("Genome\tSelected\tTooShort\n")
+
+    for genome in selected_unique_proteins:
+        count_unique_proteins.write(genome + "\t" + str(len(selected_unique_proteins[genome])) + "\t" +
+                                    str(len(removed_unique_proteins[genome])) + "\n")
+
+        for protein in selected_unique_proteins[genome]:
+            list_unique_proteins.write(genome + "\t" + protein.split("|")[1] + "\n")
+
+    count_unique_proteins.close()
+    list_unique_proteins.close()
+
+    ############################
+    ##Get the clusters shared between genomes and unique clusters to each genome
+    matrix_output = open(args.output_directory + "/matrix_output.txt", 'w')
+    list_unique_clusters = open(args.output_directory + "/list_unique_clusters.txt", 'w')
+    count_unique_clusters = open(args.output_directory + "/count_unique_clusters.txt", 'w')
+    list_shared_single_copy_clusters = open(args.output_directory + "/list_single_copy_clusters.txt", 'w')
+    list_shared_multiple_copy_clusters = open(args.output_directory + "/list_shared_multiple_copy.txt", 'w')
+
+    unique_clusters, shared_single_clusters, shared_multiple_clusters, all_clusters_matrix = \
+        seqs_shared_clusters(cluster_information, genome_id_dictionary)
+
+    #Print counters
+    run_summary.write("Number of shared single copy clusters: %d" % len(shared_single_clusters) + "\n")
+    run_summary.write("Number of shared multiple copy clusters: %d" % len(shared_multiple_clusters) + "\n")
+
+    #Print the outputs
+    matrix_output.write("\n".join(["\t".join(map(str, r)) for r in all_clusters_matrix]))  # Matrix output
+
+    # Unique clusters per genome (duplicate or paralogs?)
+    count_unique_clusters.write("Genome\tNumber of Clusters\n")
+    for genome in unique_clusters:
+        count_unique_clusters.write(genome + "\t" + str(len(unique_clusters[genome])) + "\n")
+
+        for cluster in unique_clusters[genome]:
+            list_unique_clusters.write(genome + "\t" + cluster + "\t"
+                                       + ",".join(protein for protein in cluster_information[cluster]) + "\n")
+
+    # Single copy shared clusters
+
+    for cluster in shared_single_clusters:
+        list_shared_single_copy_clusters.write(cluster + "\t" + ",".join(cluster_information[cluster]) + "\n")
+
+    # Multiple copy shared clusters
+
+    for cluster in shared_multiple_clusters:
+        list_shared_multiple_copy_clusters.write(cluster + "\t" + ",".join(cluster_information[cluster]) + "\n")
+
+    matrix_output.close()
+    list_unique_clusters.close()
+    count_unique_clusters.close()
+    list_shared_single_copy_clusters.close()
+    list_shared_multiple_copy_clusters.close()
+
+    ###Save the cluster information
+    list_all_clusters = open(args.output_directory + "/list_all_clusters.txt", 'w')
+    for cluster in cluster_information:
+        list_all_clusters.write(cluster + "\t" + ",".join(cluster_information[cluster]) + "\n")
+
+    list_all_clusters.close()
+
+    ###############
+    ##Get clusters shared by groups
+    if args.group_information:
+
+        #print genome_groups
+        unique_group_clusters, combination_clusters = clusters_in_groups(cluster_information, genome_groups)
+
+        list_unique_clusters_group = open(args.output_directory + "/list_unique_clusters_group.txt", 'w')
+        list_all_group_combinations = open(args.output_directory + "/list_all_group_combinations.txt", 'w')
+        count_group_results = open(args.output_directory + "/count_groups.txt", 'w')
+        protein_count_group_results = open(args.output_directory + "/count_proteins_group.txt", 'w')
+
+        for group in unique_group_clusters:
+            protein_count = sum(len(cluster_information[cluster]) for cluster in unique_group_clusters[group])
+
+            count_group_results.write(group + "\t" +
+                                      str(len(unique_group_clusters[group])) + "\t" + str(protein_count) + "\n")
+
+            for cluster in unique_group_clusters[group]:
+                list_unique_clusters_group.write(group + "\t" + cluster + "\t" + ",".join(cluster_information[cluster])
+                                                 + "\n")
+
+        count_group_results.write("\n")
+
+        for combination in combination_clusters:
+            combination_name = "-".join(combination)
+            protein_count = sum(len(cluster_information[cluster]) for cluster in combination_clusters[combination])
+
+            count_group_results.write(combination_name + "\t" +
+                                      str(len(combination_clusters[combination])) + "\t" + str(protein_count) + "\n")
+
+            for cluster in combination_clusters[combination]:
+                list_all_group_combinations.write(combination_name + "\t"
+                                                  + cluster + "\t" + ",".join(cluster_information[cluster]) + "\n")
+
+            protein_count_group_results.write(combination_name)
+
+            for group in combination:
+
+                count = 0
+
+                genomes = genome_groups[group]
+
+                for cluster in combination_clusters[combination]:
+                    for genome in genomes:
+                        for protein in cluster_information[cluster]:
+                            if protein.startswith(genome):
+                                count += 1
+
+                protein_count_group_results.write("\t" + group + ":" + str(count))
+
+            protein_count_group_results.write("\n")
+
+        count_group_results.close()
+        list_unique_clusters_group.close()
+        list_all_group_combinations.close()
+        run_summary.close()
