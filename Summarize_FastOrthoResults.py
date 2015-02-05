@@ -56,6 +56,8 @@ def parse_fastortho(cf, gl):
         ids_proteins = re.split(":\s+", line)
         prot = ids_proteins[1].split(" ")
 
+        prot = [x.split("(")[0] for x in prot] # Remove the genome names on the protein IDS (Fastortho does that)
+
         clean_protein_list = []  # This is used to remove proteins from genomes not in the list
 
         for genome_entry in gl:  # Adding the proteins that we need
