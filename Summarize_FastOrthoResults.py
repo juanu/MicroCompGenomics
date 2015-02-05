@@ -50,20 +50,18 @@ def parse_fastortho(cf, gl):
     total_cluster_count = 0
     clusters_removed = 0
 
-    print gl
-
     for line in fastortho_results:
         total_cluster_count += 1
         line = line.strip('\n')
         ids_proteins = re.split(":\s+", line)
-        prot = ids_proteins[1].split(" ")
+        prots = ids_proteins[1].split(" ")
 
-        prot = [x.split("(")[0] for x in prot] # Remove the genome names on the protein IDS (Fastortho does that)
+        prots = [x.split("(")[0] for x in prot] # Remove the genome names on the protein IDS (Fastortho does that)
 
         clean_protein_list = []  # This is used to remove proteins from genomes not in the list
 
         for genome_entry in gl:  # Adding the proteins that we need
-            [clean_protein_list.append(prot) for prot in [x for x in prot if x.startswith(genome_entry)]]
+            [clean_protein_list.append(prot) for prot in [x for x in prots if x.startswith(genome_entry)]]
 
         #Now I need to evaluate those clusters that now are unique and zero
         if len(clean_protein_list) == 0:
@@ -80,10 +78,6 @@ def parse_fastortho(cf, gl):
 
             cluster_dictionary[cluster_id].append(prot)
             proteins_in_cluster.add(prot)
-
-    print cluster_dictionary
-    print proteins_in_cluster
-    print clusters_removed
 
     return cluster_dictionary, proteins_in_cluster, unique_proteins_genome_count, total_cluster_count, clusters_removed
 
