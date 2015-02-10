@@ -44,7 +44,7 @@ tab_file = args.output_directory + "/seq.tab"
 mci_file = args.output_directory + "/seq.mci"
 
 make_abc_file = "cut -f 1,2,11 " + args.input_blast + " > " + abc_file
-run_mcxload = "mcxload -abc " + abc_file + " --stream-mirror --stream-neg-log10 -stream-f 'ceil(200)' -o " \
+run_mcxload = "mcxload -abc " + abc_file + " --stream-mirror --stream-neg-log10 -stream-tf 'ceil(200)' -o " \
               + mci_file + " -write-tab " + tab_file
 
 os.system(make_abc_file)
