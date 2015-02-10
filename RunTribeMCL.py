@@ -37,21 +37,24 @@ threads = 1
 if args.threads:
     threads = args.threads
 
+    #Run FastOrtho
+    #Run TribeMCL
+abc_file = args.output_directory + "/seq.abc"
+tab_file = args.output_directory + "/seq.tab"
+mci_file = args.output_directory + "/seq.mci"
+
+make_abc_file = "cut -f 1,2,11 " + args.input_blast + " > " + abc_file
+run_mcxload = "mcxload -abc " + abc_file + " -stream-mirror --stream-neg-log10 -stream-f 'ceil(200)' -o " \
+              + mci_file + " -write-tab " + tab_file
+
+os.system(make_abc_file)
+os.system(run_mcxload)
 
 if not args.iteration:
 
-    #Run FastOrtho
-    #Run TribeMCL
-
-    make_abc_file = "cut -f 1,2,11 " + args.input_blast + " > " + args.output_directory + "/seq.abc"
-    run_mcxload = "mcxload -abc seq.abc --stream-mirror --stream-neg-log10 -stream-f " \
-                  "'ceil(200)' -o seq.mci -write-tab seq.tab"
-
     output_file = args.output_directory + "/out.seq.mci.I.1.4"
-    run_mcl = "mcl seq.mci -I 1.4 -te " + str(threads) + " -o " + output_file
+    run_mcl = "mcl seq.mci -I 1.4 -te " + str(threads) + " -o " + output_file + " -use-tab " + tab_file
 
-    os.system(make_abc_file)
-    os.system(run_mcxload)
     os.system(run_mcl)
 
     #Create an option file with iteration. The range will go from 1 to 10, in 0.5 intervals. This could
@@ -61,17 +64,10 @@ else:
     i = 1.1
     cluster_inflation = []
 
-    make_abc_file = "cut -f 1,2,11 " + args.input_blast + " > " + args.output_directory + "/seq.abc"
-    run_mcxload = "mcxload -abc seq.abc --stream-mirror --stream-neg-log10 -stream-f " \
-                      "'ceil(200)' -o seq.mci -write-tab seq.tab"
-
-    os.system(make_abc_file)
-    os.system(run_mcxload)
-
     while i < 5.1:
 
         output_file = args.output_directory + "/out.seq.mci.I" + str(i)
-        run_mcl = "mcl seq.mci -I " + str(i) + " -te " + str(threads) + " -o " + output_file
+        run_mcl = "mcl seq.mci -I " + str(i) + " -te " + str(threads) + " -o " + output_file + " -use-tab " + tab_file
 
         #Count number of clusters
         number_cluster = 0
