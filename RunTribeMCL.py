@@ -11,9 +11,7 @@ program_description = "This script will run a TribeMCL analysis, using MCL and i
 
 parser = argparse.ArgumentParser(description=program_description)
 
-parser.add_argument("-w", "--output_directory", type=str, required=True)
-parser.add_argument("-p", "--protein_directory", type=str, required=True, help="Path with the protein files,"
-                                                                                      "one per genome")
+parser.add_argument("-o", "--output_directory", type=str, required=True)
 parser.add_argument("-b", "--input_blast", type=str, required=True, help="Input BLAST file, tabular format")
 parser.add_argument("-i", "--iteration", action="store_true", help="If this flag is used, the FastOrtho will be run with"
                                                                    "several inflation values for testing. "
@@ -63,10 +61,14 @@ else:
     i = 1.1
     cluster_inflation = []
 
-    while i < 5.1:
-        make_abc_file = "cut -f 1,2,11 " + args.input_blast + " > " + args.output_directory + "/seq.abc"
-        run_mcxload = "mcxload -abc seq.abc --stream-mirror --stream-neg-log10 -stream-f " \
+    make_abc_file = "cut -f 1,2,11 " + args.input_blast + " > " + args.output_directory + "/seq.abc"
+    run_mcxload = "mcxload -abc seq.abc --stream-mirror --stream-neg-log10 -stream-f " \
                       "'ceil(200)' -o seq.mci -write-tab seq.tab"
+
+    os.system(make_abc_file)
+    os.system(run_mcxload)
+
+    while i < 5.1:
 
         output_file = args.output_directory + "/out.seq.mci.I" + str(i)
         run_mcl = "mcl seq.mci -I " + str(i) + " -te " + str(threads) + " -o " + output_file
