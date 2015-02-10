@@ -53,7 +53,7 @@ os.system(run_mcxload)
 if not args.iteration:
 
     output_file = args.output_directory + "/out.seq.mci.I.1.4"
-    run_mcl = "mcl seq.mci -I 1.4 -te " + str(threads) + " -o " + output_file + " -use-tab " + tab_file
+    run_mcl = "mcl " + mci_file + " -I 1.4 -te " + str(threads) + " -o " + output_file + " -use-tab " + tab_file
 
     os.system(run_mcl)
 
@@ -67,7 +67,7 @@ else:
     while i < 5.1:
 
         output_file = args.output_directory + "/out.seq.mci.I" + str(i)
-        run_mcl = "mcl seq.mci -I " + str(i) + " -te " + str(threads) + " -o " + output_file + " -use-tab " + tab_file
+        run_mcl = "mcl" + mci_file + " -I " + str(i) + " -te " + str(threads) + " -o " + output_file + " -use-tab " + tab_file
 
         #Count number of clusters
         number_cluster = 0
