@@ -13,8 +13,8 @@ parser = argparse.ArgumentParser(description=program_description)
 
 parser.add_argument("-o", "--output_directory", type=str, required=True)
 parser.add_argument("-b", "--input_blast", type=str, required=True, help="Input BLAST file, tabular format")
-parser.add_argument("-i", "--iteration", action="store_true", help="If this flag is used, the FastOrtho will be run with"
-                                                                   "several inflation values for testing. "
+parser.add_argument("-i", "--iteration", action="store_true", help="If this flag is used, the FastOrtho will be run"
+                                                                   "with several inflation values for testing. "
                                                                    "The output will also be a table and a plot showing"
                                                                    "the number of clusters found at different inflation"
                                                                    "values")
