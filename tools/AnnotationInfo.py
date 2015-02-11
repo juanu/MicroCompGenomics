@@ -10,7 +10,7 @@ def cog_definitions():
     cog_one_letter = defaultdict(str)
     desc_cog_number = defaultdict(str)
 
-    for line in open(path + "/cog_list.txt", 'r'):
+    for line in open(path + "/extras/cog_list.txt", 'r'):
         if line.strip():
             line = line.rstrip()
             letter_code, cog_number, cog_def = line.split("\t")
