@@ -122,7 +122,11 @@ if __name__ == '__main__':
 
                     if feature == "COG":
                         letter = cog_one_letter[top_hit]
-                        definition = desc_cog_letter[letter[0]]
+                        try:
+                            definition = desc_cog_letter[letter[0]]
+                        except IndexError:
+                            definition = None
+                            print cluster, letter
 
                         output_top_hit.write(cluster + "\t" + top_hit + "\t" + str(function_description)
                                              + "\t" + letter[0] + "\t" + definition + "\n")
