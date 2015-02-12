@@ -334,7 +334,7 @@ def parse_single_img(genome_dictionary, input_path, output_path):
             scaf_id = annotation_dictionary[gene_entry]["Scaffold"][1]
             start, stop = annotation_dictionary[gene_entry]["Coordinates"][1].split("..")
             stop = stop[:-3]
-            coords_file.write("%s\t%s\t%s\t%s\n" % (gene_entry, scaf_id, start, stop))
+            coords_file.write("%s\t%s\t%s\t%s\n" % (scaf_id, gene_entry, start, stop))
 
         #Process the GBK file to create the aminoacid, nucleotide and genome files
 
