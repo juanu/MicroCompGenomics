@@ -38,16 +38,16 @@ def run_site_branch(cluster_name, treefile, alignment, folder_temp, folder_plots
     #Output list with the results
     output_list = []
 
-    #for node in tree.iter_descendants():
-    for leaf in tree:
+    for node in tree.iter_descendants():
+        print node, str(node.node_id), node.get_leaf_names()
 
         #Mark the tree for the leaf under analysis
-        tree.mark_tree([leaf.node_id], marks=["#1"])
+        tree.mark_tree([node.node_id], marks=["#1"])
 
         #Use the node id as folder name
-        temp_leaf_name = str(leaf.node_id)
+        temp_leaf_name = str(node.node_id)
 
-        print "Processing: " + cluster_name + " " + temp_leaf_name + " " + ",".join(leaf.get_leaf_names())
+        print "Processing: " + cluster_name + " " + temp_leaf_name + " " + ",".join(node.get_leaf_names())
 
         #Run computation of each model.
         #From the notes on ETE:
@@ -113,8 +113,8 @@ def run_site_branch(cluster_name, treefile, alignment, folder_temp, folder_plots
         tree.mark_tree(map(lambda x: x.node_id, tree.get_descendants()), marks=[''] * len(tree.get_descendants()),
                        verbose=False)
 
-        result_entry = [cluster_name, leaf.node_id, omega_value, proportion_sites, ps, test_status,
-                        total_sites, sites_over_95, ",".join(leaf.get_leaf_names())]
+        result_entry = [cluster_name, node.node_id, omega_value, proportion_sites, ps, test_status,
+                        total_sites, sites_over_95, ",".join(node.get_leaf_names())]
 
        # print result_entry
         #print ps_sites
