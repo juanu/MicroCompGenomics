@@ -4,7 +4,6 @@ __author__ = 'Juan Ugalde'
 #TODO
 #Clean and document the script
 
-
 def run_site_branch(cluster_name, treefile, alignment, folder_temp, folder_plots):
     from ete2 import EvolTree
     from ete2.treeview.layouts import evol_clean_layout
@@ -39,7 +38,6 @@ def run_site_branch(cluster_name, treefile, alignment, folder_temp, folder_plots
     output_list = []
 
     for node in tree.iter_descendants():
-        print node, str(node.node_id), node.get_leaf_names()
 
         #Mark the tree for the leaf under analysis
         tree.mark_tree([node.node_id], marks=["#1"])
