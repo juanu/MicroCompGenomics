@@ -113,7 +113,6 @@ for genome in genome_gene_info:
             locus_tag = None
 
         #Get the protein coords
-        print genome, protein
         try:
             contig_id, start, stop = gene_coords[protein]
         except KeyError:
