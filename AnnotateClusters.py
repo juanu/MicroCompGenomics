@@ -126,7 +126,7 @@ if __name__ == '__main__':
                             definition = desc_cog_letter[letter[0]]
                         except IndexError:
                             definition = None
-                            print cluster, letter
+                            print cluster, letter, top_hit
 
                         output_top_hit.write(cluster + "\t" + top_hit + "\t" + str(function_description)
                                              + "\t" + letter[0] + "\t" + definition + "\n")
