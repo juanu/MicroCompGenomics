@@ -137,14 +137,14 @@ if __name__ == '__main__':
 
         #Make protein trees using FastTree
         protein_tree = build_tree_fasttree(aligned_AA, PROTEIN)
-        protein_tree_output = open(protein_tree_folder + "/" + cluster + ".tre", 'w')
+        protein_tree_output = protein_tree_folder + "/" + cluster + ".tre"
         #protein_tree_output.write(protein_tree.getNewick(with_distances=True))
         protein_tree.writeToFile(protein_tree_output)
         #protein_tree_output.close()
 
         #Make nucleotide trees using FastTree
         nucleotide_tree = build_tree_fasttree(aligned_DNA, DNA)
-        nucleotide_tree_output = open(dna_tree_folder + "/" + cluster + ".tre", 'w')
+        nucleotide_tree_output = dna_tree_folder + "/" + cluster + ".tre"
         #nucleotide_tree_output.write(nucleotide_tree.getNewick(with_distances=True))
         nucleotide_tree.writeToFile(nucleotide_tree_output)
         #nucleotide_tree_output.close()
