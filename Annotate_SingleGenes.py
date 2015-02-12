@@ -51,8 +51,8 @@ for coord_file in os.listdir(coord_folder):
         line = line.rstrip()
         contig_id, protein_id, start, stop = line.split("\t")
         gene_coords[protein_id] = (contig_id, start, stop)
-        print line
 
+print gene_coords["637282479"]
 #Get the annotation information
 annotation_folder = args.data_folders + "/annotation"
 
