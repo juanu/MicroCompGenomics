@@ -41,7 +41,11 @@ def parse_annotation_folder(genome_jgi_list, annotation_folder):
 
                 info = line.split("\t")
 
-                genome_annotation[info[0]][info[1]] = info[2]
+                if info[2] == "COG_category":
+                    continue
+
+                else:
+                    genome_annotation[info[0]][info[1]] = info[2]
 
                 try:
                     function_defs[info[2]] = info[3]

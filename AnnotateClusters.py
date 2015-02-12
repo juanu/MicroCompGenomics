@@ -165,7 +165,3 @@ if __name__ == '__main__':
 
         output_top_hit.close()
         output_conflicts.close()
-
-
-
-
