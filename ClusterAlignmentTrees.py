@@ -3,6 +3,9 @@
 
 __author__ = 'Juan A. Ugalde'
 
+#TODO
+#Change requirements of Cogent, and use Biopython instead
+
 
 def get_cluster_information(input_cluster_file):
     cluster_file = open(input_cluster_file, 'r')
@@ -40,7 +43,6 @@ if __name__ == '__main__':
     from cogent import LoadSeqs, DNA, PROTEIN
     from cogent.app.mafft import align_unaligned_seqs as mafft_align_unaligned_seqs
     from cogent.core.genetic_code import DEFAULT as standard_code
-    from cogent.app.fasttree import build_tree_from_alignment as build_tree_fasttree
     import os
     import argparse
     from Bio.Phylo.Applications import _Fasttree
@@ -168,8 +170,6 @@ if __name__ == '__main__':
         #nucleotide_tree_output.write(nucleotide_tree.getNewick(with_distances=True))
         #nucleotide_tree.writeToFile(nucleotide_tree_output)
         #nucleotide_tree_output.close()
-
-
 
     #Print log files
     logfile = open(args.output_directory + "/logfile.txt", 'w')

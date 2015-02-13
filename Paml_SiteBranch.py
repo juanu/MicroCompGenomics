@@ -93,8 +93,8 @@ def run_site_branch(cluster_name, treefile, alignment, folder_temp, folder_plots
             test_status = "Positive"
 
             if printed_tree == 0:
-                tree.render(plot_file + ".svg", layout=evol_clean_layout)
-                tree.render(plot_file + ".jpg", layout=evol_clean_layout)
+                #tree.render(plot_file + ".svg", layout=evol_clean_layout)
+                #tree.render(plot_file + ".jpg", layout=evol_clean_layout)
                 printed_tree = 1
 
             else:
