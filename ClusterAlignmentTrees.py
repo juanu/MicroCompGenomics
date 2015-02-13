@@ -43,6 +43,7 @@ if __name__ == '__main__':
     from cogent.app.fasttree import build_tree_from_alignment as build_tree_fasttree
     import os
     import argparse
+    from Bio.Phylo.Applications import _Fasttree
 
     program_description = "Script that takes a list of clusters, and the sequence information of the genes. " \
                           "The output is tha alignment of each cluster, and a tree (FastTree)"
@@ -135,25 +136,40 @@ if __name__ == '__main__':
         #Replace the aminoacid sequences with the nucleotide sequence
         aligned_DNA = aligned_AA.replaceSeqs(unaligned_DNA)
 
-        #Make protein trees using FastTree
-        protein_tree = build_tree_fasttree(aligned_AA, PROTEIN)
+        #Output files
+        aligned_dna_file = dna_aligned_folder + "/" + cluster + ".fna"
+        aligned_aa_file = protein_alignment_folder + "/" + cluster + ".faa"
         protein_tree_output = protein_tree_folder + "/" + cluster + ".tre"
+        nucleotide_tree_output = dna_tree_folder + "/" + cluster + ".tre"
+
+        unaligned_DNA.writeToFile(dna_unaligned_folder + "/" + cluster + ".fna", format="fasta")
+        unaligned_AA.writeToFile(protein_unaligned_folder + "/" + cluster + ".faa", format="fasta")
+        aligned_DNA.writeToFile(aligned_dna_file, format="fasta")
+        aligned_AA.writeToFile(aligned_aa_file, format="fasta")
+
+        #Make protein trees with FastTree
+        make_dna_tree = _Fasttree.FastTreeCommandline(cmd='FastTree', input=aligned_dna_file,
+                                                     out=nucleotide_tree_output, slow=True, nt=True)
+        make_aa_tree = _Fasttree.FastTreeCommandline(cmd="FastTree", input=aligned_aa_file,
+                                                     out=protein_tree_output, slow=True)
+
+        dna_out, dna_err = make_dna_tree()
+        aa_out, aa_err = make_aa_tree()
+
+        #Make protein trees using FastTree
+        #protein_tree = build_tree_fasttree(aligned_AA, PROTEIN, best_tree=True)
         #protein_tree_output.write(protein_tree.getNewick(with_distances=True))
-        protein_tree.writeToFile(protein_tree_output)
+        #protein_tree.writeToFile(protein_tree_output)
         #protein_tree_output.close()
 
         #Make nucleotide trees using FastTree
-        nucleotide_tree = build_tree_fasttree(aligned_DNA, DNA)
-        nucleotide_tree_output = dna_tree_folder + "/" + cluster + ".tre"
+        #nucleotide_tree = build_tree_fasttree(aligned_DNA, DNA, best_tree=True)
+
         #nucleotide_tree_output.write(nucleotide_tree.getNewick(with_distances=True))
-        nucleotide_tree.writeToFile(nucleotide_tree_output)
+        #nucleotide_tree.writeToFile(nucleotide_tree_output)
         #nucleotide_tree_output.close()
 
-        #Write the unaligned and aligned sequences
-        unaligned_DNA.writeToFile(dna_unaligned_folder + "/" + cluster + ".fna", format="fasta")
-        unaligned_AA.writeToFile(protein_unaligned_folder + "/" + cluster + ".faa", format="fasta")
-        aligned_DNA.writeToFile(dna_aligned_folder + "/" + cluster + ".fna", format="fasta")
-        aligned_AA.writeToFile(protein_alignment_folder + "/" + cluster + ".faa", format="fasta")
+
 
     #Print log files
     logfile = open(args.output_directory + "/logfile.txt", 'w')
