@@ -2,8 +2,7 @@
 __author__ = 'Juan A. Ugalde'
 
 if __name__ == '__main__':
-    import os
-    import sys
+    from collections import defaultdict
     import argparse
     from tools.data_input.GenomeData import read_genome_list
     from tools.data_input.ClusterInput import parse_fastortho, parse_tribemcl
@@ -21,7 +20,7 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=program_description)
 
     parser.add_argument("-l", "--genome_list_index", type=str,
-                        help="File with the genome list. Format GenomeID, FullName, ShortName", required=True)
+                        help="File with the genomes to search in the cluster. Format GenomeID, FullName, ShortName", required=True)
     parser.add_argument("-c", "--cluster_file", type=str, help="Ortholog file", required=True)
     parser.add_argument("-t", "--clustering_algorithm", type=str, help="Type of clustering used. Options are fastortho,"
                                                                        "tribemcl", required=True)
@@ -30,4 +29,52 @@ if __name__ == '__main__':
 
     args = parser.parse_args()
 
-    
+    ##Read the genome list
+    genome_id_dictionary, genome_count = read_genome_list(args.genome_list_index)
+
+    ##Read the cluster files
+    #Create the output variables
+    cluster_information = None
+    set_of_proteins_in_clusters = None
+    unique_cluster_count = None
+    total_clusters = None
+    removed_clusters = None
+
+    if args.clustering_algorithm == "fastortho":
+        cluster_information, set_of_proteins_in_clusters, unique_cluster_count, total_clusters, removed_clusters = \
+            parse_fastortho(args.cluster_file, genome_id_dictionary.keys())
+
+    elif args.clustering_algorithm == "tribemcl":
+           cluster_information, set_of_proteins_in_clusters, unique_cluster_count, total_clusters, removed_clusters = \
+               parse_tribemcl(args.cluster_file, genome_id_dictionary.keys())
+
+
+    #Iterate over the query clusters
+    with open(args.query_clusters) as fp:
+        for line in fp:
+            if line.strip():
+                line = line.rstrip()
+
+                #Get the list of the proteins in the cluster
+                proteins_in_cluster = cluster_information[line]
+
+                #Get the genomes of the proteins
+                genome_cluster = defaultdict()
+                for protein in proteins_in_cluster:
+                    id, genome = protein.split("|")
+
+                    if genome in genome_id_dictionary.keys():
+                        genome_cluster[genome] += 1
+                    else:
+                        continue
+
+                print line + "\t" + str(len(genome_cluster.keys())) + "/" + str(len(genome_id_dictionary.keys()))
+
+
+
+
+
+
+
+
+
