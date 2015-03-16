@@ -63,10 +63,11 @@ if __name__ == '__main__':
 
                 #Get the genomes of the proteins
                 genome_cluster = defaultdict()
+
                 for protein in proteins_in_cluster:
                     prot_id, genome = protein.split("|")
 
-                    if genome in prefix_name_genome:
+                    if genome in prefix_name_genome.keys():
                         genome_cluster[genome] += 1
 
                     else:
