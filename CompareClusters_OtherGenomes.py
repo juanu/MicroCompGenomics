@@ -70,7 +70,7 @@ if __name__ == '__main__':
                         genome_cluster[genome] += 1
 
                     else:
-                        continue
-                        #print genome, genome_id_dictionary
+                        print genome
+                        print prefix_name_genome
 
                 print line + "\t" + str(len(genome_cluster.keys())) + "/" + str(len(genome_id_dictionary.keys()))
