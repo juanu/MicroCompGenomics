@@ -20,7 +20,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description=program_description)
 
     parser.add_argument("-l", "--genome_list_index", type=str,
-                        help="File with the genomes to search in the cluster. Format GenomeID, FullName, ShortName", required=True)
+                        help="File with the genomes to search in the cluster. Format GenomeID, FullName, ShortName",
+                        required=True)
     parser.add_argument("-c", "--cluster_file", type=str, help="Ortholog file", required=True)
     parser.add_argument("-t", "--clustering_algorithm", type=str, help="Type of clustering used. Options are fastortho,"
                                                                        "tribemcl", required=True)
@@ -31,6 +32,8 @@ if __name__ == '__main__':
 
     ##Read the genome list
     genome_id_dictionary, genome_count = read_genome_list(args.genome_list_index)
+
+    prefix_name_genome = {v: k for k, v in genome_id_dictionary.items()}
 
     ##Read the cluster files
     #Create the output variables
@@ -61,21 +64,13 @@ if __name__ == '__main__':
                 #Get the genomes of the proteins
                 genome_cluster = defaultdict()
                 for protein in proteins_in_cluster:
-                    id, genome = protein.split("|")
+                    prot_id, genome = protein.split("|")
 
-                    if genome in genome_id_dictionary.values():
+                    if genome in prefix_name_genome:
                         genome_cluster[genome] += 1
+
                     else:
                         continue
                         #print genome, genome_id_dictionary
 
                 print line + "\t" + str(len(genome_cluster.keys())) + "/" + str(len(genome_id_dictionary.keys()))
-
-
-
-
-
-
-
-
-
